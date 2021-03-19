@@ -68,6 +68,11 @@ public class HealthBar : MonoBehaviour
         UpdateHealthBar();
     }
 
+    public int GetHealth()
+    {
+        return healthCount;
+    }
+
     private void UpdateHealthBar()
     {
         int index = 1;

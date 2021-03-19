@@ -5,7 +5,7 @@
  *      - 
  *      - 
  * 
- * Last edited: 2021-02-18
+ * Last edited: 2021-03-19
  */
 using System.Collections;
 using System.Collections.Generic;
@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     private float attackCooldown = 0f;
     private bool isAttacking = true;
 
+    private bool isDead = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,6 +53,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead)
+        {
+            rb.velocity = new Vector2(0f, rb.velocity.y);
+            return;
+        }
+
         if (hitstun > 0)
         {
             hitstun -= Time.fixedDeltaTime;
@@ -209,20 +217,29 @@ public class PlayerController : MonoBehaviour
 
     public void Hit(int damage, Vector2 damageSource, float knockbackForce)
     {
-        if (hitstun > 0 || enemyBounceFrames > 0)
+        if (!isDead)
         {
-            return; // if Gino is already being hit by something, don't hit them again
+            if (hitstun > 0 || enemyBounceFrames > 0)
+            {
+                return; // if Gino is already being hit by something, don't hit them again
+            }
+
+            hb.Hit(damage);
+            anim.SetTrigger("hit");
+            Vector2 knockbackDirection = new Vector2(transform.position.x - damageSource.x, transform.position.y - damageSource.y).normalized;
+            // the new vector2 in here is a constant amount of vertical knockup to the player always gets bumped slightly upwards
+            rb.velocity = Vector2.zero;
+            rb.AddForce((knockbackDirection + new Vector2(0f, 1f)) * knockbackForce);
+
+            hitstun = 0.2f;
+            enemyBounceFrames = 0; // prevent player from jumping out of hitstun if both the bounce hitbox and damage hitbox trigger at the same time
+
+            if (hb.GetHealth() <= 0)
+            {
+                isDead = true;
+                anim.SetTrigger("isDead");
+            }
         }
-
-        hb.Hit(damage);
-        anim.SetTrigger("hit");
-        Vector2 knockbackDirection = new Vector2(transform.position.x - damageSource.x, transform.position.y - damageSource.y).normalized;
-        // the new vector2 in here is a constant amount of vertical knockup to the player always gets bumped slightly upwards
-        rb.velocity = Vector2.zero;
-        rb.AddForce((knockbackDirection + new Vector2(0f, 1f)) * knockbackForce);
-
-        hitstun = 0.2f;
-        enemyBounceFrames = 0; // prevent player from jumping out of hitstun if both the bounce hitbox and damage hitbox trigger at the same time
     }
 
     private void OnDrawGizmos()
