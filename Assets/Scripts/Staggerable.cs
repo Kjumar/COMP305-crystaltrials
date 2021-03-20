@@ -1,3 +1,12 @@
+/* Staggerable.cs
+ * ------------------------------
+ * Author(s):
+ *      - Jay Ganguli
+ *      - 
+ *      - 
+ * 
+ * Last Edited: 2021-03-19
+ */
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
