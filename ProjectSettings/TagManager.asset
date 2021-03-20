@@ -8,6 +8,7 @@ TagManager:
   - CaveBat
   - CreepyCrawler
   - Spikes
+  - GoalZone
   layers:
   - Default
   - TransparentFX

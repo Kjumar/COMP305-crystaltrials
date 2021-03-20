@@ -34,6 +34,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform attackPos;
     [SerializeField] private float attackRadius = 0.5f;
 
+    [Header("UI Screens")]
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private GameObject victoryScreen;
+
     private Rigidbody2D rb;
     private bool isGrounded;
 
@@ -49,6 +53,9 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        gameOverScreen.SetActive(false);
+        victoryScreen.SetActive(false);
     } 
 
     private void FixedUpdate()
@@ -154,6 +161,13 @@ public class PlayerController : MonoBehaviour
             score += collision.gameObject.GetComponent<FloatingCollectible>().GetPoints();
             scoreText.text = score.ToString();
             Destroy(collision.gameObject);
+            return;
+        }
+
+        if (collision.gameObject.CompareTag("GoalZone"))
+        {
+            victoryScreen.SetActive(true);
+            gameObject.GetComponent<PlayerController>().enabled = false;
         }
     }
 
@@ -238,6 +252,8 @@ public class PlayerController : MonoBehaviour
             {
                 isDead = true;
                 anim.SetTrigger("isDead");
+
+                gameOverScreen.SetActive(true);
             }
         }
     }
