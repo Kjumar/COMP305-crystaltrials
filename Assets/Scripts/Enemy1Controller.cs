@@ -24,6 +24,8 @@ public class Enemy1Controller : MonoBehaviour
     [SerializeField] private int health = 1;
     [SerializeField] private Animator anim;
 
+    // public TimeShiftController timeControls = null; // set automatically in the Start() method
+
     private float xOrigin; // the original x position of this enemy
     private int aiState = 1; // integer representing what the enemy is currently doing (1 = moving left, 2 = mobing right, etc)
 
@@ -35,6 +37,11 @@ public class Enemy1Controller : MonoBehaviour
         xOrigin = transform.position.x;
         rb = GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player");
+
+        //if (timeControls == null)
+        //{
+        //    timeControls = FindObjectOfType<TimeShiftController>();
+        //}
     }
 
     private void FixedUpdate()

@@ -16,11 +16,13 @@ public class SceneLoader : MonoBehaviour
 {
     public void LoadLevel1()
     {
+        Time.timeScale = 1f; // reset this before loading a scene, scene we mess with this value in the pause menu
         SceneManager.LoadScene("Level1", LoadSceneMode.Single);
     }
 
     public void LoadMainMenu()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
     }
 }

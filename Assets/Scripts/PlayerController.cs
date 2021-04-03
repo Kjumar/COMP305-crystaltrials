@@ -258,6 +258,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void SetVelocity(Vector2 velocity)
+    {
+        rb.velocity = velocity;
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
