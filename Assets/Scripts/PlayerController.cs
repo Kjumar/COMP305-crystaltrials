@@ -5,7 +5,7 @@
  *      - 
  *      - 
  * 
- * Last edited: 2021-03-19
+ * Last edited: 2021-04-05
  */
 using System.Collections;
 using System.Collections.Generic;
@@ -38,6 +38,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject gameOverScreen;
     [SerializeField] private GameObject victoryScreen;
 
+    [Header("Sound Effects")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip[] gemPickupSounds;
+
     private Rigidbody2D rb;
     private bool isGrounded;
 
@@ -53,6 +57,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
 
         gameOverScreen.SetActive(false);
         victoryScreen.SetActive(false);
@@ -161,6 +166,8 @@ public class PlayerController : MonoBehaviour
             score += collision.gameObject.GetComponent<FloatingCollectible>().GetPoints();
             scoreText.text = score.ToString();
             Destroy(collision.gameObject);
+            // play audio clip
+            audioSource.PlayOneShot(gemPickupSounds[Random.Range(0, gemPickupSounds.Length)]);
             return;
         }
 
