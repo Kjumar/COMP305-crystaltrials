@@ -61,7 +61,33 @@ public class PlayerController : MonoBehaviour
 
         gameOverScreen.SetActive(false);
         victoryScreen.SetActive(false);
-    } 
+    }
+
+    private void Update()
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        if (hitstun <= 0)
+        {
+            if (attackCooldown <= 0)
+            {
+
+                if (Input.GetAxis("Fire1") > 0)
+                {
+                    anim.SetTrigger("attack");
+                    attackCooldown = 0.3f;
+                }
+            }
+            else
+            {
+                attackCooldown -= Time.deltaTime;
+                Strike();
+            }
+        }
+    }
 
     private void FixedUpdate()
     {
@@ -93,25 +119,6 @@ public class PlayerController : MonoBehaviour
             {
                 transform.localScale = new Vector3(-1, 1, 1); // face left
                 anim.SetBool("isRunning", true);
-            }
-
-            if (attackCooldown <= 0)
-            {
-
-                if (Input.GetAxis("Fire1") > 0)
-                {
-                    anim.SetTrigger("attack");
-                    attackCooldown = 0.3f;
-                    isAttacking = true;
-                }
-            }
-            else
-            {
-                attackCooldown -= Time.fixedDeltaTime;
-                if (isAttacking)
-                {
-                    Strike();
-                }
             }
 
             // jump code
@@ -232,6 +239,11 @@ public class PlayerController : MonoBehaviour
 
     public void Hit(int damage)
     {
+        if (isDead || hitstun > 0 || enemyBounceFrames > 0)
+        {
+            return;
+        }
+
         hb.Hit(damage);
         anim.SetTrigger("hit");
     }

@@ -31,6 +31,8 @@ public class Enemy1Controller : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    private float hitstun = 0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,6 +44,14 @@ public class Enemy1Controller : MonoBehaviour
         //{
         //    timeControls = FindObjectOfType<TimeShiftController>();
         //}
+    }
+
+    private void Update()
+    {
+        if (hitstun > 0)
+        {
+            hitstun -= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
@@ -75,6 +85,11 @@ public class Enemy1Controller : MonoBehaviour
 
     public void Hit(int damage)
     {
+        if (hitstun > 0)
+        {
+            return;
+        }
+        hitstun = 0.3f;
         health -= damage;
 
         anim.SetTrigger("hit");

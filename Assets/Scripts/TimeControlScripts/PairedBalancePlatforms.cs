@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PairedBalancePlatforms : MonoBehaviour
+public class PairedBalancePlatforms : MonoBehaviour, TimeShiftable
 {
     [Header("Platform 1")]
     [SerializeField] private DetectorPlatform plat1;
@@ -19,7 +19,7 @@ public class PairedBalancePlatforms : MonoBehaviour
     private float speed = 5f;
     private float stopRange;
 
-    public  TimeShiftController timeControls;
+    public float timeScale = 1f;
 
     // Start is called before the first frame update
     void Start()
@@ -30,15 +30,13 @@ public class PairedBalancePlatforms : MonoBehaviour
         p1rb = plat1.gameObject.GetComponent<Rigidbody2D>();
         p2rb = plat2.gameObject.GetComponent<Rigidbody2D>();
 
-        timeControls = FindObjectOfType<TimeShiftController>();
-
         stopRange = speed / 59;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float scaledSpeed = speed * Time.deltaTime * timeControls.GetTimeScale();
+        float scaledSpeed = speed * Time.deltaTime * timeScale;
         if (plat1.isColliding)
         {
             if (plat1.gameObject.transform.position.y > p1Root - (p1Height / 2))
@@ -117,5 +115,10 @@ public class PairedBalancePlatforms : MonoBehaviour
 
         Gizmos.DrawCube(plat1.gameObject.transform.position, new Vector3(0.2f, p1Height, 0f));
         Gizmos.DrawCube(plat2.gameObject.transform.position, new Vector3(0.2f, p2Height, 0f));
+    }
+
+    public void SetTimeScale(float scale)
+    {
+        timeScale = scale;
     }
 }

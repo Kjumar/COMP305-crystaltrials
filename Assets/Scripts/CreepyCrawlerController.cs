@@ -33,6 +33,9 @@ public class CreepyCrawlerController : MonoBehaviour
     private Vector3 initialScale;
     private Vector3 flipX;
     private float attackCooldown = 0f;
+    private float attackDelay = 0f;
+
+    private float hitstun = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -44,6 +47,14 @@ public class CreepyCrawlerController : MonoBehaviour
 
         initialScale = transform.localScale;
         flipX = new Vector3(-initialScale.x, initialScale.y, initialScale.z);
+    }
+
+    void Update()
+    {
+        if (hitstun > 0)
+        {
+            hitstun -= Time.deltaTime;
+        }
     }
 
     // Update is called once per frame
@@ -64,11 +75,20 @@ public class CreepyCrawlerController : MonoBehaviour
             rb.velocity = Vector2.zero;
             anim.SetTrigger("attack");
             attackCooldown = 1.5f;
-            StartCoroutine(AttackPlayer()); // coroutine handles dealing damage to the player after waiting for the attack to "start up"
+            attackDelay = 0f;
         }
         else if (attackCooldown > 0)
         {
             attackCooldown -= Time.fixedDeltaTime;
+            if (attackDelay < 0.2f)
+            {
+                attackDelay += Time.fixedDeltaTime;
+            }
+            else if (IsPlayerInRange())
+            {
+                player.GetComponent<PlayerController>().Hit(1, transform.position, 400f);
+            }
+
         }
         else
         {
@@ -109,19 +129,13 @@ public class CreepyCrawlerController : MonoBehaviour
         return Physics2D.OverlapCircle(attackPos.position, 0.3f, whatIsPlayer);
     }
 
-    // wait a brief delay after the attack starts, then check if the player is still in range before doing damage
-    private IEnumerator AttackPlayer()
-    {
-        yield return new WaitForSeconds(0.2f);
-        if (IsPlayerInRange())
-        {
-            player.GetComponent<PlayerController>().Hit(1, transform.position, 400f);
-        }
-        StopCoroutine(AttackPlayer());
-    }
-
     public void Hit(int damage)
     {
+        if (hitstun > 0)
+        {
+            return;
+        }
+        hitstun = 0.3f;
         health -= damage;
 
         anim.SetTrigger("hit");
