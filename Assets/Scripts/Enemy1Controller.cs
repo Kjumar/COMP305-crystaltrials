@@ -15,7 +15,6 @@ public class Enemy1Controller : MonoBehaviour
 {
     // controller for the bat-like enemy. This enemy has no gravity (since it flyes around) and
     // should patrol left and right within a horizontal area
-    [SerializeField] private GameObject player;
 
     [SerializeField] private float leftBound;
     [SerializeField] private float rightBound;
@@ -24,6 +23,17 @@ public class Enemy1Controller : MonoBehaviour
     [SerializeField] private int health = 1;
     [SerializeField] private Animator anim;
 
+    private PlayerController player = null;
+
+    private PlayerController Player
+    {
+        get
+        {
+            if (player == null)
+                player = GameObject.FindObjectOfType<PlayerController>();
+            return player;
+        }
+    }
     // public TimeShiftController timeControls = null; // set automatically in the Start() method
 
     private float xOrigin; // the original x position of this enemy
@@ -31,27 +41,17 @@ public class Enemy1Controller : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    private float hitstun = 0f;
-
     // Start is called before the first frame update
     void Start()
     {
         xOrigin = transform.position.x;
         rb = GetComponent<Rigidbody2D>();
-        player = GameObject.Find("Player");
+        
 
         //if (timeControls == null)
         //{
         //    timeControls = FindObjectOfType<TimeShiftController>();
         //}
-    }
-
-    private void Update()
-    {
-        if (hitstun > 0)
-        {
-            hitstun -= Time.deltaTime;
-        }
     }
 
     private void FixedUpdate()
@@ -85,11 +85,6 @@ public class Enemy1Controller : MonoBehaviour
 
     public void Hit(int damage)
     {
-        if (hitstun > 0)
-        {
-            return;
-        }
-        hitstun = 0.3f;
         health -= damage;
 
         anim.SetTrigger("hit");
@@ -97,7 +92,7 @@ public class Enemy1Controller : MonoBehaviour
         if (health <= 0)
         {
             rb.bodyType = RigidbodyType2D.Dynamic;
-            Vector2 knockback = new Vector2(transform.position.x - player.transform.position.x, transform.position.y - player.transform.position.y);
+            Vector2 knockback = new Vector2(transform.position.x - Player.transform.position.x, transform.position.y - Player.transform.position.y);
             rb.AddForce((knockback.normalized + new Vector2(0f, 1f)) * 500f);
             Destroy(gameObject, 0.5f);
         }

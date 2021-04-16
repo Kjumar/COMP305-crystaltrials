@@ -40,14 +40,16 @@ public class PauseMenuController : MonoBehaviour
         }
     }
 
-    private void PauseGame()
+    public void PauseGame()
     {
+        isPaused = true;
         Time.timeScale = 0;
         pauseMenuUI.SetActive(true);
     }
 
-    private void UnPauseGame()
+    public void UnPauseGame()
     {
+        isPaused = false;
         Time.timeScale = 1f;
         pauseMenuUI.SetActive(false);
     }

@@ -28,15 +28,9 @@ public class PlayerController : MonoBehaviour
 
     // the animator is in a child component to account for the sprite offset when flipping
     [SerializeField] private Animator anim;
-    [SerializeField] private Text scoreText;
-    [SerializeField] private HealthBar hb;
 
     [SerializeField] private Transform attackPos;
     [SerializeField] private float attackRadius = 0.5f;
-
-    [Header("UI Screens")]
-    [SerializeField] private GameObject gameOverScreen;
-    [SerializeField] private GameObject victoryScreen;
 
     [Header("Sound Effects")]
     [SerializeField] private AudioSource audioSource;
@@ -58,36 +52,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
-
-        gameOverScreen.SetActive(false);
-        victoryScreen.SetActive(false);
-    }
-
-    private void Update()
-    {
-        if (isDead)
-        {
-            return;
-        }
-
-        if (hitstun <= 0)
-        {
-            if (attackCooldown <= 0)
-            {
-
-                if (Input.GetAxis("Fire1") > 0)
-                {
-                    anim.SetTrigger("attack");
-                    attackCooldown = 0.3f;
-                }
-            }
-            else
-            {
-                attackCooldown -= Time.deltaTime;
-                Strike();
-            }
-        }
-    }
+    } 
 
     private void FixedUpdate()
     {
@@ -119,6 +84,25 @@ public class PlayerController : MonoBehaviour
             {
                 transform.localScale = new Vector3(-1, 1, 1); // face left
                 anim.SetBool("isRunning", true);
+            }
+
+            if (attackCooldown <= 0)
+            {
+
+                if (Input.GetAxis("Fire1") > 0)
+                {
+                    anim.SetTrigger("attack");
+                    attackCooldown = 0.3f;
+                    isAttacking = true;
+                }
+            }
+            else
+            {
+                attackCooldown -= Time.fixedDeltaTime;
+                if (isAttacking)
+                {
+                    Strike();
+                }
             }
 
             // jump code
@@ -154,11 +138,6 @@ public class PlayerController : MonoBehaviour
                 enemyBounceFrames = 3;
             }
 
-            if (transform.parent != null)
-            {
-                horizontalMove = horizontalMove * 2;
-            }
-
             rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y);
         }
     }
@@ -175,35 +154,12 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Gem")
         {
-            score += collision.gameObject.GetComponent<FloatingCollectible>().GetPoints();
-            scoreText.text = score.ToString();
+            int score = collision.gameObject.GetComponent<FloatingCollectible>().GetPoints();
+            GameManager.Instance.AddScore(score);
             Destroy(collision.gameObject);
             // play audio clip
             audioSource.PlayOneShot(gemPickupSounds[Random.Range(0, gemPickupSounds.Length)]);
             return;
-        }
-
-        if (collision.gameObject.CompareTag("GoalZone"))
-        {
-            victoryScreen.SetActive(true);
-            gameObject.GetComponent<PlayerController>().enabled = false;
-            return;
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("StickyPlatform"))
-        {
-            transform.parent = collision.transform;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("StickyPlatform"))
-        {
-            transform.parent = null;
         }
     }
 
@@ -261,12 +217,7 @@ public class PlayerController : MonoBehaviour
 
     public void Hit(int damage)
     {
-        if (isDead || hitstun > 0 || enemyBounceFrames > 0)
-        {
-            return;
-        }
-
-        hb.Hit(damage);
+        GameManager.Instance.HealthBar.Hit(damage);
         anim.SetTrigger("hit");
     }
 
@@ -279,7 +230,7 @@ public class PlayerController : MonoBehaviour
                 return; // if Gino is already being hit by something, don't hit them again
             }
 
-            hb.Hit(damage);
+            GameManager.Instance.HealthBar.Hit(damage);
             anim.SetTrigger("hit");
             Vector2 knockbackDirection = new Vector2(transform.position.x - damageSource.x, transform.position.y - damageSource.y).normalized;
             // the new vector2 in here is a constant amount of vertical knockup to the player always gets bumped slightly upwards
@@ -289,14 +240,19 @@ public class PlayerController : MonoBehaviour
             hitstun = 0.2f;
             enemyBounceFrames = 0; // prevent player from jumping out of hitstun if both the bounce hitbox and damage hitbox trigger at the same time
 
-            if (hb.GetHealth() <= 0)
+            if (GameManager.Instance.HealthBar.GetHealth() <= 0)
             {
                 isDead = true;
                 anim.SetTrigger("isDead");
 
-                gameOverScreen.SetActive(true);
+                GameManager.Instance.ShowGameOver();
             }
         }
+    }
+
+    public void SetVelocity(Vector2 velocity)
+    {
+        rb.velocity = velocity;
     }
 
     private void OnDrawGizmos()

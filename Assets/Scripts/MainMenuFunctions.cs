@@ -20,12 +20,11 @@ public class MainMenuFunctions : MonoBehaviour
 
     public void NewGame()
     {
-        SceneManager.LoadScene("Level1", LoadSceneMode.Single);
+        GameManager.Instance.LoadLevel(GameManager.Level.Level1);
     }
 
-    public void OpenOptionsMenu()
+    public void Exit()
     {
-        gameObject.SetActive(false);
-        optionMenu.gameObject.SetActive(true);
+        GameManager.Instance.Exit();
     }
 }

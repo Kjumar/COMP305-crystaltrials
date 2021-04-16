@@ -14,15 +14,12 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    public void LoadLevel1()
-    {
-        Time.timeScale = 1f; // reset this before loading a scene, scene we mess with this value in the pause menu
-        SceneManager.LoadScene("Level1", LoadSceneMode.Single);
-    }
+    [SerializeField]
+    private Transform spawnPoint = null; 
 
-    public void LoadMainMenu()
+    private void OnLevelWasLoaded(int level)
     {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu", LoadSceneMode.Single);
+        GameObject prefab = Resources.Load("Prefab/Player") as GameObject;
+        GameObject player = Instantiate(prefab, spawnPoint);
     }
 }
