@@ -154,6 +154,11 @@ public class PlayerController : MonoBehaviour
                 enemyBounceFrames = 3;
             }
 
+            if (transform.parent != null)
+            {
+                horizontalMove = horizontalMove * 2;
+            }
+
             rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y);
         }
     }
@@ -182,6 +187,23 @@ public class PlayerController : MonoBehaviour
         {
             victoryScreen.SetActive(true);
             gameObject.GetComponent<PlayerController>().enabled = false;
+            return;
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("StickyPlatform"))
+        {
+            transform.parent = collision.transform;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("StickyPlatform"))
+        {
+            transform.parent = null;
         }
     }
 
@@ -275,11 +297,6 @@ public class PlayerController : MonoBehaviour
                 gameOverScreen.SetActive(true);
             }
         }
-    }
-
-    public void SetVelocity(Vector2 velocity)
-    {
-        rb.velocity = velocity;
     }
 
     private void OnDrawGizmos()

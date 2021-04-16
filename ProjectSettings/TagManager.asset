@@ -9,6 +9,7 @@ TagManager:
   - CreepyCrawler
   - Spikes
   - GoalZone
+  - StickyPlatform
   layers:
   - Default
   - TransparentFX
