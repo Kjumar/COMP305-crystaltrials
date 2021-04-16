@@ -18,7 +18,7 @@ public class MovingPlatformBehavior : MonoBehaviour, TimeShiftable
     public float speed = 4f;
 
     [Header("Particle Effects")]
-    public GameObject particle;
+    public ParticleCannon cannon;
 
     private int pathIndex = 0;
     private float timeScale = 1f;
@@ -42,6 +42,15 @@ public class MovingPlatformBehavior : MonoBehaviour, TimeShiftable
             {
                 pathIndex = (pathIndex + 1) % waypoints.Count;
             }
+        }
+
+        if (timeScale == 1)
+        {
+            cannon.enabled = false;
+        }
+        else
+        {
+            cannon.enabled = true;
         }
     }
 
