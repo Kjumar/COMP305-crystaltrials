@@ -1,4 +1,5 @@
 
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,8 +36,6 @@ public class GameManager : MonoBehaviour
 
     // UI screens
     [Header("Screens")]
-    [SerializeField]
-    private PauseMenuController pauseScreen = null;
 
     [SerializeField]
     private GameObject victoryScreen = null;
@@ -58,6 +57,7 @@ public class GameManager : MonoBehaviour
     private int score = 0;
 
     private int lastScore = 0;
+    private int lastHealth = 6;
 
     private PlayerController player = null;
 
@@ -90,6 +90,8 @@ public class GameManager : MonoBehaviour
         if(currentLevel > Level.MainMenu)
         {
             lastScore = score;
+            scoreText.text = this.score.ToString();
+            healthBar.setHealth(lastHealth);
 
             GameObject spawnPoint = GameObject.FindGameObjectWithTag("Respawn");
             if(spawnPoint != null)
@@ -98,14 +100,15 @@ public class GameManager : MonoBehaviour
                 player.transform.position = spawnPoint.transform.position;
                 this.player = player.GetComponent<PlayerController>();
 
-                CameraController cameraController = FindObjectOfType<CameraController>();
-                cameraController.SetPlayer(player.transform);
+                CinemachineVirtualCamera cam = FindObjectOfType<CinemachineVirtualCamera>();
+                cam.Follow = player.transform;
             }
         }
         else
         {
             score = 0;
             lastScore = 0;
+            //healthBar.setHealth(6);
         }
     }
 
@@ -126,14 +129,12 @@ public class GameManager : MonoBehaviour
             gameHudScreen.SetActive(currentLevel > Level.MainMenu);
             victoryScreen.SetActive(false);
             gameoverScreen.SetActive(false);
-
-            // Unpause
-            pauseScreen.UnPauseGame();
         }
     }
 
     public void LoadNextLevel()
     {
+        lastHealth = healthBar.GetHealth();
         // Loads the next level by incrementing the index
         if (currentLevel < Level.Level3)
             LoadLevel(currentLevel + 1);
@@ -142,12 +143,13 @@ public class GameManager : MonoBehaviour
     public void ReloadLevel()
     {
         score = lastScore;
-
         LoadLevel(currentLevel);
     }
 
     public void LoadMainMenu()
     {
+        score = 0;
+        lastHealth = 6;
         LoadLevel(Level.MainMenu);
     }
 

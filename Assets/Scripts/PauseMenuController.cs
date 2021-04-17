@@ -15,11 +15,14 @@ public class PauseMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuUI;
 
+    public GameManager gameManager;
+
     private bool isPaused = false;
 
     private void Start()
     {
         pauseMenuUI.SetActive(false);
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
@@ -52,5 +55,17 @@ public class PauseMenuController : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuUI.SetActive(false);
+    }
+
+    public void ReloadLevel()
+    {
+        UnPauseGame();
+        gameManager.ReloadLevel();
+    }
+
+    public void ReturnToMain()
+    {
+        UnPauseGame();
+        gameManager.LoadMainMenu();
     }
 }

@@ -39,7 +39,6 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
 
-    private int score;
     private float hitstun = 0f; // when the player gets hit and has hitstun, they cannot move
 
     private float attackCooldown = 0f;
