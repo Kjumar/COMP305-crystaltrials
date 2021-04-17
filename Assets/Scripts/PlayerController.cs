@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float bounceForce = 500f;
     [SerializeField] private float bounceCheckHeight = 0.2f;
     [SerializeField] private LayerMask whatIsEnemy;
+    [SerializeField] private LayerMask whatIsInteract;
     private float enemyBounceFrames = 0; // number of frames after bouncing off an enemy where the player can input a jump to gain extra height
 
     // the animator is in a child component to account for the sprite offset when flipping
@@ -137,6 +138,11 @@ public class PlayerController : MonoBehaviour
                 enemyBounceFrames = 3;
             }
 
+            //if (transform.parent != null)
+            //{
+            //    horizontalMove = horizontalMove * 2;
+            //}
+
             rb.velocity = new Vector2(horizontalMove * speed, rb.velocity.y);
         }
     }
@@ -146,6 +152,13 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Spikes"))
         {
             Hit(1, collision.GetContact(0).point, 400);
+        }
+        if (collision.gameObject.layer.CompareTo(whatIsGround) != 0)
+        {
+            if (!collision.gameObject.CompareTag("StickyPlatform"))
+            {
+                transform.parent = null;
+            }
         }
     }
 
@@ -159,6 +172,18 @@ public class PlayerController : MonoBehaviour
             // play audio clip
             audioSource.PlayOneShot(gemPickupSounds[Random.Range(0, gemPickupSounds.Length)]);
             return;
+        }
+        if (collision.gameObject.CompareTag("StickyPlatform"))
+        {
+            transform.parent = collision.transform;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("StickyPlatform"))
+        {
+            transform.parent = null;
         }
     }
 
@@ -189,6 +214,7 @@ public class PlayerController : MonoBehaviour
     {
         Collider2D collider = Physics2D.OverlapCircle(attackPos.position, attackRadius, whatIsEnemy);
 
+
         if (collider)
         {
             isAttacking = false;
@@ -210,6 +236,19 @@ public class PlayerController : MonoBehaviour
                     enemy.Hit(1);
                 }
                 return;
+            }
+        }
+        Collider2D iCollider = Physics2D.OverlapCircle(attackPos.position, attackRadius, whatIsInteract);
+
+        if (iCollider)
+        {
+            if (iCollider.gameObject.CompareTag("TimeController"))
+            {
+                TimeShiftController controller = iCollider.gameObject.GetComponent<TimeShiftController>();
+                if (controller.enabled)
+                {
+                    controller.Hit();
+                }
             }
         }
     }
@@ -247,11 +286,6 @@ public class PlayerController : MonoBehaviour
                 GameManager.Instance.ShowGameOver();
             }
         }
-    }
-
-    public void SetVelocity(Vector2 velocity)
-    {
-        rb.velocity = velocity;
     }
 
     private void OnDrawGizmos()

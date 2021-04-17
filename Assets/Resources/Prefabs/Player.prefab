@@ -639,13 +639,12 @@ MonoBehaviour:
   whatIsEnemy:
     serializedVersion: 2
     m_Bits: 128
+  whatIsInteract:
+    serializedVersion: 2
+    m_Bits: 2048
   anim: {fileID: 2185516552561297554}
-  scoreText: {fileID: 0}
-  hb: {fileID: 0}
   attackPos: {fileID: 2185516553647972424}
   attackRadius: 0.65
-  gameOverScreen: {fileID: 0}
-  victoryScreen: {fileID: 0}
   audioSource: {fileID: 0}
   gemPickupSounds:
   - {fileID: 8300000, guid: 5ac6242608b593342802f2c42954d298, type: 3}

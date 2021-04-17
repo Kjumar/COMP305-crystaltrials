@@ -9,6 +9,8 @@ TagManager:
   - CreepyCrawler
   - Spikes
   - GoalZone
+  - StickyPlatform
+  - TimeController
   layers:
   - Default
   - TransparentFX
@@ -21,7 +23,7 @@ TagManager:
   - Collectible
   - Player
   - NoCollision
-  - 
+  - Interactible
   - 
   - 
   - 
